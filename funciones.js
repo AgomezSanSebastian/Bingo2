@@ -12,6 +12,9 @@ var bombo = []; // Bombo es un array con todos los números del 1 al 90 para jug
  * Función para preparar toda la vista del Bingo antes del comienzo del juego
  */
 $("document").ready(function() {
+
+    $("header").append("<img src>")
+
     for (let index = 1; index <= 20; index++) {
         $("#mySelect").append("<option value=" + index + ">" + index + "</option>");
     }
