@@ -1,9 +1,10 @@
 /********************************* Autor: Adrian Gomez Luna Fecha creación: 10/02/2021 Última modificación: dd/mm/aaaa Versión: x.xx ***********************************/
 
 .logo {
-    width: 200px;
-    height: 150px;
-    align-items: center;
+    width: 400px;
+    height: 200px;
+    left: 500px;
+    position: relative;
 }
 
 div span {
