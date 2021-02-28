@@ -4,9 +4,13 @@
  * Definición de las variables
  */
 var nJugadores = 0; //Número de jugadores que jugará en el juego
+var velocidad = 3000; //Velocidad del juego
 var nGanadores = 0; //Número de ganadores, útil para la función de repartirPremio()
 var precio = 0; //Precio que tendrá el cartón
 var bombo = []; // Bombo es un array con todos los números del 1 al 90 para jugar al juego
+var bomboNumeroSalido = []; //bombo con los números que ya han salido
+
+var cartones = []; //cartones de todos los jugadores, es array de arrays
 
 
 /**
@@ -15,7 +19,7 @@ var bombo = []; // Bombo es un array con todos los números del 1 al 90 para jug
 $("document").ready(function() {
 
     for (let index = 1; index <= 20; index++) {
-        $("#mySelect").append("<option value=" + index + ">" + index + "</option>");
+        $("#njugador").append("<option value=" + index + ">" + index + "</option>");
     }
 
     for (let index = 1; index <= 90; index++) {
@@ -27,30 +31,94 @@ $("document").ready(function() {
         $("#numeros").append("<span id='bola" + index + "' > " + index + " </span>");
     }
 
-    //coregir las vista de la tabla
+    //coregir las vista de la tabla de los numeros
     $("#numeros").ready(function() {
         $("span").addClass("nuevaTablaBolas");
     });
 
-    rellenarBombo();
+    //rellenarBombo();
+
 
 
 })
+
+function iniciarJuego() {
+
+    //Guarda la configuración del juego
+    nJugadores = document.getElementById("njugador").value;
+    velocidad = document.getElementById("velo").value;
+    precio = document.getElementById("precio").value;
+
+    rellenarBombo();
+
+    for (let index = 1; index <= nJugadores; index++) {
+        cartones.push(crear_carton());
+
+    }
+
+    comenzar();
+
+
+}
+
+
+/**
+ * Función que comienza a sacar bolas
+ */
+function comenzar() {
+    juego = setInterval(dameBola_Ajax, velocidad);
+}
+
+/**
+ * Función que para el sacar bolas del bombo
+ */
+function stop() {
+    clearInterval(juego);
+}
+
+/**
+ * Recarga una nueva partida, recargando la pantalla
+ */
+function nuevaPartida() {
+    location.reload();
+}
 
 /**
  * Función para rellenar el bombo con los números que hay en el juego
  */
 function rellenarBombo() {
     for (let index = 1; index < 91; index++) {
-        bombo[index] = index;
+        bombo.push(index);
     }
 }
 
+function dameBola_Ajax() {
+    $.ajax({
+        type: "POST",
+        url: "bola.php",
+        data: { bolas: bombo },
+        success: dameBola,
+    });
+}
 
+function dameBola(numero) {
+    newBola = bombo[numero];
+    bomboNumeroSalido.push(newBola);
 
+    if (bomboNumeroSalido.length < 91) {
+        bombo.splice(numero, 1); //Quitamos la bola del bombo
+        document.getElementById("bola").innerHTML = newBola;
 
+        ////////////////// PON COMO COMENTARIO ESTO PARA JUGAR TU SOLO //////////////////
+        //compruebaResto();
+    } else {
+        nuevaPartida();
+        alert("Se han sacado todos los números");
+    }
+}
 
-
+//CARTÓN
+//----------------------------------------------------------------------
 /**
  * Función que genera un cartón de forma aleatoria
  */
@@ -81,8 +149,9 @@ function crear_carton() {
     //Uno los 3 arrays en 1 solo
     var carton = fila1.concat(fila2, fila3);
 
-    cargar_carton(carton);
+    dibujar_carton(carton);
 
+    return carton;
 }
 
 
@@ -139,29 +208,74 @@ function arregloFila(numero) {
     return numero;
 }
 
-
-function cargar_carton(carton) {
-
-    var filas = $("filas").val();
-    var columnas = $("columnas").val();
-
-    var tabla = "";
+function dibujar_carton(carton) {
     var indice = 0;
+    var tabla = document.createElement("table");
+    tabla.setAttribute("id", "player");
+    // tabla.setAttribute("border", "2");
+    tabla.classList.add('player');
 
-    tabla += "<table class='table table-bordered'>";
-    for (let fila = 1; fila < 4; fila++) {
-        tabla += "<tr>";
-        for (let columna = 1; columna < 10; columna++) {
-            tabla += "<td>" + carton[indice] + "</td>";
+
+    for (let filas = 1; filas < 4; filas++) {
+        var fila = document.createElement("tr");
+
+        for (let columnas = 1; columnas < 10; columnas++) {
+            var hueco = document.createElement("td");
+            hueco.setAttribute("id", indice);
+
+            if (carton[indice] == 0) {
+                hueco.classList.add('vacia');
+            } else {
+                hueco.innerHTML = carton[indice];
+                hueco.addEventListener("click", function() {
+                    acierto(this.id, carton);
+                });
+            }
+            fila.appendChild(hueco);
             indice++;
         }
-        tabla += "</tr>";
+        tabla.appendChild(fila);
     }
-    tabla += "</table>";
 
-    $("#cartones").html(tabla);
-
+    var zonaJuego = document.getElementById("cartones");
+    zonaJuego.appendChild(tabla);
 }
+
+function acierto(id, carton) {
+    var celda = document.getElementById(id);
+    var posicion = id;
+
+    celda.classList.toggle('acierto');
+}
+
+
+
+/**
+ * Funcion que pinta el tablero de un carton
+ * @param {carton} carton 
+ */
+// function cargar_carton(carton) {
+
+//     var filas = $("filas").val();
+//     var columnas = $("columnas").val();
+
+//     var tabla = "";
+//     var indice = 0;
+
+//     tabla += "<table class='table table-bordered'>";
+//     for (let fila = 1; fila < 4; fila++) {
+//         tabla += "<tr>";
+//         for (let columna = 1; columna < 10; columna++) {
+//             tabla += "<td>" + carton[indice] + "</td>";
+//             indice++;
+//         }
+//         tabla += "</tr>";
+//     }
+//     tabla += "</table>";
+
+//     //$("#cartones").html(tabla);
+
+// }
 
 
 

@@ -12,5 +12,40 @@ div span {
 }
 
 .nuevaTablaBolas {
-    color: brown;
+    color: rgb(245, 181, 181);
+}
+
+#bola {
+    line-height: 95px;
+    background-color: #a50c2d;
+    color: white;
+    margin: auto;
+    height: 100px;
+    width: 100px;
+    border-radius: 50px;
+    font-size: 60px;
+    padding: auto;
+}
+
+#player {
+    width: 80%;
+    border: solid black 5px;
+}
+
+#player td {
+    background-position: center;
+    border: solid black 3px;
+    height: 100px;
+    width: 100px;
+    text-align: center;
+    font-size: 40px;
+}
+
+.vacia {
+    background-color: darksalmon;
+}
+
+.acierto {
+    background-color: chocolate;
+    color: crimson;
 }
