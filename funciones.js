@@ -18,18 +18,16 @@ var cartones = []; //cartones de todos los jugadores, es array de arrays
  */
 $("document").ready(function() {
 
-    for (let index = 1; index <= 20; index++) {
+    for (let index = 5; index <= 20; index++) {
         $("#njugador").append("<option value=" + index + ">" + index + "</option>");
     }
 
-    for (let index = 1; index <= 90; index++) {
-        if (index == 11 || index == 21 || index == 31 || index == 41 ||
-            index == 51 || index == 61 || index == 71 || index == 81) {
-            $("#numeros").append("<br>");
-        }
-
-        $("#numeros").append("<span id='bola" + index + "' > " + index + " </span>");
+    for (let index = 1; index <= 5; index++) {
+        $("#precio").append("<option value=" + index + ">" + index + "</option>");
     }
+
+    colocarNumeros();
+
 
     //coregir las vista de la tabla de los numeros
     $("#numeros").ready(function() {
@@ -37,8 +35,6 @@ $("document").ready(function() {
     });
 
     //rellenarBombo();
-
-
 
 })
 
@@ -83,6 +79,51 @@ function nuevaPartida() {
     location.reload();
 }
 
+
+function colocarNumeros() {
+
+    var tabla = document.createElement("table");
+    tabla.classList.add('tablaNumeros');
+    var fila = document.createElement("tr");
+
+    for (let index = 1; index <= 90; index++) {
+        if (index == 11 || index == 21 || index == 31 || index == 41 ||
+            index == 51 || index == 61 || index == 71 || index == 81) {
+            tabla.appendChild(fila);
+            fila = document.createElement("tr");
+        }
+        var hueco = document.createElement("td");
+        hueco.setAttribute("id", "N" + index);
+        hueco.innerHTML = index;
+        fila.appendChild(hueco);
+
+        if (index == 90) {
+            tabla.appendChild(fila);
+        }
+    }
+    var zona = document.getElementById("numeros");
+    zona.appendChild(tabla);
+
+    //OTRA FORMA DE HACERLA
+    // var tabla = document.createElement("table");
+
+    // for (let filas = 0; filas < 10; filas++) {
+    //     var fila = document.createElement("tr");
+
+    //     for (let columna = 1; columna < 11; columna++) {
+    //         var hueco = document.createElement("td");
+    //         hueco.setAttribute("id", filas + "/" + columna);
+    //         hueco.innerHTML = filas + "" + columna;
+    //         fila.appendChild(hueco);
+    //     }
+    //     tabla.appendChild(fila);
+    // }
+
+    // var zona = document.getElementById("numeros");
+    // zona.appendChild(tabla);
+}
+
+
 /**
  * Función para rellenar el bombo con los números que hay en el juego
  */
@@ -108,9 +149,11 @@ function dameBola(numero) {
     if (bomboNumeroSalido.length < 91) {
         bombo.splice(numero, 1); //Quitamos la bola del bombo
         document.getElementById("bola").innerHTML = newBola;
+        let num = parseInt(numero) + 1;
+        var celda = document.getElementById("N" + newBola);
+        celda.classList.toggle('colorear');
+        comprobarBingoRivales();
 
-        ////////////////// PON COMO COMENTARIO ESTO PARA JUGAR TU SOLO //////////////////
-        //compruebaResto();
     } else {
         nuevaPartida();
         alert("Se han sacado todos los números");
@@ -212,7 +255,6 @@ function dibujar_carton(carton) {
     var indice = 0;
     var tabla = document.createElement("table");
     tabla.setAttribute("id", "player");
-    // tabla.setAttribute("border", "2");
     tabla.classList.add('player');
 
 
@@ -240,6 +282,7 @@ function dibujar_carton(carton) {
     var zonaJuego = document.getElementById("cartones");
     zonaJuego.appendChild(tabla);
 }
+
 
 function acierto(id, carton) {
     var celda = document.getElementById(id);
@@ -277,6 +320,53 @@ function acierto(id, carton) {
 
 // }
 
+/**
+ * Funcion que se activa al pulsar el botón de bingo para el jgador
+ */
+function bingo() {
+    stop();
+
+    if (compruebaBingo(0)) {
+        let nuevaVentana = window.open("bingoOK.html", "_blank", "width=300px, heignt=100px");
+        let premio = repartirPremio();
+        nuevaVentana.document.getElementById("premio").innerHTML = premio;
+    } else {
+        let nuevaVentana = window.open("bingoNO.html", "_blank", "width=300px, heignt=100px");
+    }
+}
+
+function compruebaBingo(indice) {
+    var valores = cartones[indice];
+    var bingo = false;
+    var aciertos = 0;
+
+    for (let index = 0; index < valores.length; index++) {
+        if (bomboNumeroSalido.includes(valores[index])) {
+            aciertos++;
+        }
+    }
+
+    if (aciertos == 15) {
+        bingo = true;
+    }
+
+    return bingo;
+}
+
+
+function comprobarBingoRivales() {
+
+    for (let index = 1; index < cartones.length; index++) {
+        if (compruebaBingo(index)) {
+            nGanadores++;
+        }
+    }
+    //Hay al menos un ganador
+    if (nGanadores >= 1) {
+        stop();
+        //ventana ganador
+    }
+}
 
 
 

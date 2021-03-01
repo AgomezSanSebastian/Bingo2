@@ -55,12 +55,13 @@
 
                 <div class="mt-2">
                     <label>Cantidad de dinero apostado: </label>
-                    <input type="number" class="form-control" id="precio" name="precio" value="1">
+                    <select id="precio" name="precio" class="form-control"></select>
                 </div>
 
                 <div class="mt-3 text-center">
                     <input type="submit" class="btn btn-dark" value="¡¡Comenzar a JUGAR!!" onclick="iniciarJuego()">
                     <input type="submit" class="btn btn-dark" value="Reiniciar" onclick="stop()">
+                    <input type="submit" class="btn btn-dark" value="comenzar" onclick="comenzar()">
                 </div>
 
 
@@ -68,15 +69,12 @@
 
             </div>
 
-            <div id="cartones" class="col-lg-7"></div>
+            <div id="cartones" class="col-lg-7 text-center"></div>
 
             <div id="derecha" class="col-lg-2 text-center">
                 <div id="bola" class="text-center mb-5">-</div>
+                <button class="btn btn-success text-center" onclick="bingo()">BINGO!!</button>
 
-                <button onclick="crear_carton()">Click Me</button>
-                <button onclick="cargar_carton()">Pulsa</button>
-                <p id="demo">hola</p>
-                <p class="hey">asdasd</p>
             </div>
         </div>
 
