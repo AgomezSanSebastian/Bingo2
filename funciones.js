@@ -339,11 +339,13 @@ function bingo() {
     stop();
 
     if (compruebaBingo(0)) {
-        let nuevaVentana = window.open("bingoOK.html", "_blank", "width=300px, height=200px");
-        let premio = repartirPremio();
-        nuevaVentana.document.getElementById("premio").innerHTML = premio;
+        var nuevaVentana = window.open("bingoOK.html", "_blank", "width=300px, height=200px");
+        var premio = repartirPremio();
+        nuevaVentana.onload = function() {
+            nuevaVentana.document.getElementById("premio").innerHTML = premio;
+        };
     } else {
-        let nuevaVentana = window.open("bingoNO.html", "_blank", "width=300px, height=200px");
+        var nuevaVentana = window.open("bingoNO.html", "_blank", "width=300px, height=200px");
     }
 }
 
@@ -361,8 +363,12 @@ function compruebaBingo(indice) {
         if (bomboNumeroSalido.includes(valores[index])) {
             aciertos++;
             if (index > 0) {
-                var celda = document.getElementById(indice + "" + newBola);
-                celda.classList.toggle('colorear');
+                var tabla = document.getElementById("cartones").getElementsByTagName("table")[indice];
+                Array.from(tabla.getElementsByTagName("td")).forEach(td => {
+                    if (parseInt(td.innerHTML) == bomboNumeroSalido[bomboNumeroSalido.length - 1]) {
+                        $(td).addClass("colorear");
+                    }
+                })
             }
         }
     }
@@ -385,9 +391,11 @@ function comprobarBingoRivales() {
     //Hay al menos un ganador
     if (nGanadores >= 1) {
         stop();
-        let newVentana = window.open("ganaMaquina.html", "_blank", "width= 300px, height= 200px");
-        let premio = repartirPremio();
-        newVentana.document.getElementById("premio").innerHTML = premio;
+        var newVentana = window.open("ganaMaquina.html", "_blank", "width= 300px, height= 200px");
+        var premio = repartirPremio();
+        newVentana.onload = function() {
+            newVentana.document.getElementById("premio").innerHTML = premio;
+        };
     }
 }
 
