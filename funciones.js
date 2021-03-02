@@ -79,7 +79,9 @@ function nuevaPartida() {
     location.reload();
 }
 
-
+/**
+ * Función que dibuja la tabla de los números del bombo
+ */
 function colocarNumeros() {
 
     var tabla = document.createElement("table");
@@ -133,6 +135,7 @@ function rellenarBombo() {
     }
 }
 
+
 function dameBola_Ajax() {
     $.ajax({
         type: "POST",
@@ -142,6 +145,11 @@ function dameBola_Ajax() {
     });
 }
 
+/**
+ * Da los números que van saliendo del bombo y los coloca en un nuevo array para controlar las bolas que hayan
+ * salido.
+ * @param numero 
+ */
 function dameBola(numero) {
     newBola = bombo[numero];
     bomboNumeroSalido.push(newBola);
@@ -251,11 +259,13 @@ function arregloFila(numero) {
     return numero;
 }
 
+
 function dibujar_carton(carton) {
     var indice = 0;
     var tabla = document.createElement("table");
     tabla.setAttribute("id", "player");
     tabla.classList.add('player');
+    tabla.classList.add('mb-2')
 
 
     for (let filas = 1; filas < 4; filas++) {
@@ -263,15 +273,17 @@ function dibujar_carton(carton) {
 
         for (let columnas = 1; columnas < 10; columnas++) {
             var hueco = document.createElement("td");
-            hueco.setAttribute("id", indice);
+            hueco.setAttribute("id", cartones.length + "" + indice);
 
             if (carton[indice] == 0) {
                 hueco.classList.add('vacia');
             } else {
                 hueco.innerHTML = carton[indice];
-                hueco.addEventListener("click", function() {
-                    acierto(this.id, carton);
-                });
+                if (cartones.length == 0) { //Si es el del jugador le añadimos un evento de pulsación
+                    hueco.addEventListener("click", function() {
+                        acierto(this.id, carton);
+                    });
+                }
             }
             fila.appendChild(hueco);
             indice++;
@@ -327,14 +339,19 @@ function bingo() {
     stop();
 
     if (compruebaBingo(0)) {
-        let nuevaVentana = window.open("bingoOK.html", "_blank", "width=300px, heignt=100px");
+        let nuevaVentana = window.open("bingoOK.html", "_blank", "width=300px, height=200px");
         let premio = repartirPremio();
         nuevaVentana.document.getElementById("premio").innerHTML = premio;
     } else {
-        let nuevaVentana = window.open("bingoNO.html", "_blank", "width=300px, heignt=100px");
+        let nuevaVentana = window.open("bingoNO.html", "_blank", "width=300px, height=200px");
     }
 }
 
+/**
+ * Función que comprueba si el cartón enviado por indice tiene los 15 aciertos que garantiza 
+ * ser el ganador
+ * @param {*} indice 
+ */
 function compruebaBingo(indice) {
     var valores = cartones[indice];
     var bingo = false;
@@ -343,6 +360,10 @@ function compruebaBingo(indice) {
     for (let index = 0; index < valores.length; index++) {
         if (bomboNumeroSalido.includes(valores[index])) {
             aciertos++;
+            if (index > 0) {
+                var celda = document.getElementById(indice + "" + newBola);
+                celda.classList.toggle('colorear');
+            }
         }
     }
 
@@ -364,7 +385,9 @@ function comprobarBingoRivales() {
     //Hay al menos un ganador
     if (nGanadores >= 1) {
         stop();
-        //ventana ganador
+        let newVentana = window.open("ganaMaquina.html", "_blank", "width= 300px, height= 200px");
+        let premio = repartirPremio();
+        newVentana.document.getElementById("premio").innerHTML = premio;
     }
 }
 
