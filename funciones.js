@@ -38,12 +38,18 @@ $("document").ready(function() {
 
 })
 
+
+/**
+ * Función que inicia una partida nueva. Es llamada desde el botón de inicio de partida
+ */
 function iniciarJuego() {
 
     //Guarda la configuración del juego
     nJugadores = document.getElementById("njugador").value;
     velocidad = document.getElementById("velo").value;
     precio = document.getElementById("precio").value;
+
+    document.getElementById("btnInicio").style.display = "none";
 
     rellenarBombo();
 
@@ -73,7 +79,7 @@ function stop() {
 }
 
 /**
- * Recarga una nueva partida, recargando la pantalla
+ * Recarga una nueva partida recargando la pantalla
  */
 function nuevaPartida() {
     location.reload();
@@ -125,6 +131,7 @@ function colocarNumeros() {
     // zona.appendChild(tabla);
 }
 
+//-------------------BOMBO-------------------
 
 /**
  * Función para rellenar el bombo con los números que hay en el juego
@@ -135,11 +142,14 @@ function rellenarBombo() {
     }
 }
 
-
+/**
+ * Función AJAX
+ */
 function dameBola_Ajax() {
     $.ajax({
         type: "POST",
         url: "bola.php",
+        datatype: "text",
         data: { bolas: bombo },
         success: dameBola,
     });
@@ -147,8 +157,8 @@ function dameBola_Ajax() {
 
 /**
  * Da los números que van saliendo del bombo y los coloca en un nuevo array para controlar las bolas que hayan
- * salido.
- * @param numero 
+ * salido. Además va coloreando los números que hayan salido en la tabla de números.
+ * @param {int} numero 
  */
 function dameBola(numero) {
     newBola = bombo[numero];
@@ -168,8 +178,9 @@ function dameBola(numero) {
     }
 }
 
-//CARTÓN
-//----------------------------------------------------------------------
+
+//-----------------------------CARTÓN----------------------------------
+
 /**
  * Función que genera un cartón de forma aleatoria
  */
@@ -208,7 +219,7 @@ function crear_carton() {
 
 /**
  * Función donde devuelvo números aleatorios para una columna para el cartón.
- * En los números aleatorios no se repiten y van ordenados.
+ * Los números aleatorios no se repiten y van ordenados.
  * 
  * @param {Integer} max 
  * @param {Integer} min 
@@ -241,7 +252,7 @@ function aleatorio(max, min) {
 }
 
 /**
- * Función que añade 4 ceros a un array de forma aleatoria en las posiciones
+ * Función que añade 4 ceros a un array de forma aleatoria 
  * 
  * @param {Array} numero 
  */
@@ -259,7 +270,10 @@ function arregloFila(numero) {
     return numero;
 }
 
-
+/**
+ * Función que pinta un cartón de bingo. Se le pasa un array con los valores a pintar.
+ * @param {Array} carton 
+ */
 function dibujar_carton(carton) {
     var indice = 0;
     var tabla = document.createElement("table");
@@ -281,7 +295,7 @@ function dibujar_carton(carton) {
                 hueco.innerHTML = carton[indice];
                 if (cartones.length == 0) { //Si es el del jugador le añadimos un evento de pulsación
                     hueco.addEventListener("click", function() {
-                        acierto(this.id, carton);
+                        acierto(this.id);
                     });
                 }
             }
@@ -295,10 +309,12 @@ function dibujar_carton(carton) {
     zonaJuego.appendChild(tabla);
 }
 
-
-function acierto(id, carton) {
+/**
+ * Función que le añade la clase de acierto o no a la celda pasada por su id
+ * @param {string} id 
+ */
+function acierto(id) {
     var celda = document.getElementById(id);
-    var posicion = id;
 
     celda.classList.toggle('acierto');
 }
@@ -333,7 +349,8 @@ function acierto(id, carton) {
 // }
 
 /**
- * Funcion que se activa al pulsar el botón de bingo para el jgador
+ * Funcion que se activa al pulsar el botón de bingo para el jugador. Y llama a la función comprobarBingo para 
+ * saber si tiene esos 15 aciertos. Si tiene bingo o no saca una nueva ventana emergente con la situación
  */
 function bingo() {
     stop();
@@ -351,8 +368,8 @@ function bingo() {
 
 /**
  * Función que comprueba si el cartón enviado por indice tiene los 15 aciertos que garantiza 
- * ser el ganador
- * @param {*} indice 
+ * ser el ganador. Y Pintamos las casillas que coincidan con el acierto del número.
+ * @param {int} indice 
  */
 function compruebaBingo(indice) {
     var valores = cartones[indice];
@@ -380,7 +397,11 @@ function compruebaBingo(indice) {
     return bingo;
 }
 
-
+/**
+ * Función que va comprobando todos los cartones de la máquina para saber si hay algún ganador. 
+ * Si coinciden de que haya 15 aciertos en un cartón o más, se añade a ganadores. 
+ * Y sacamos una ventana emergente con la situación.
+ */
 function comprobarBingoRivales() {
 
     for (let index = 1; index < cartones.length; index++) {
